@@ -62,7 +62,11 @@ export default function LibraryPage() {
         .eq('user_id', uid).order('liked_at', { ascending: false }).limit(100),
     ])
     setPlaylists((pl || []) as Playlist[])
-    const rows = (lk || []) as LikedRow[]
+    // Supabase returns the joined `nasheeds` column as an array; normalise to single object
+    const rows = ((lk || []) as any[]).map(r => ({
+      ...r,
+      nasheeds: Array.isArray(r.nasheeds) ? r.nasheeds[0] : r.nasheeds,
+    })) as LikedRow[]
     setLiked(rows)
     setLoading(false)
     fetchArtistsFromRows([
